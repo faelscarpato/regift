@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { MapPin, Save, LogOut, Camera, User as UserIcon } from "lucide-react";
+import { MapPin, Save, LogOut, Camera, User as UserIcon, Package } from "lucide-react";
+import Link from "next/link";
 
 export default function ProfilePage() {
     const supabase = createClient();
@@ -76,7 +77,7 @@ export default function ProfilePage() {
         setSaving(true);
         // Upload
         const { error: uploadError } = await supabase.storage.from('items').upload(fileName, file);
-
+        
         if (uploadError) {
             alert("Erro no upload da imagem");
             setSaving(false);
@@ -85,7 +86,7 @@ export default function ProfilePage() {
 
         // Get URL
         const { data: { publicUrl } } = supabase.storage.from('items').getPublicUrl(fileName);
-
+        
         // Update State & DB immediately
         setAvatarUrl(publicUrl);
         await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', user.id);
@@ -94,7 +95,7 @@ export default function ProfilePage() {
 
     const updateLocation = () => {
         if (!navigator.geolocation) return alert("GPS não suportado");
-
+        
         navigator.geolocation.getCurrentPosition(async (pos) => {
             const { latitude, longitude } = pos.coords;
             const { error } = await supabase.from('profiles').update({
@@ -138,10 +139,10 @@ export default function ProfilePage() {
 
             {/* Form */}
             <div className="space-y-6 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-
+                
                 <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Nome Completo</label>
-                    <input
+                    <input 
                         value={fullName}
                         onChange={e => setFullName(e.target.value)}
                         className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:border-holiday-red outline-none"
@@ -151,7 +152,7 @@ export default function ProfilePage() {
 
                 <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">WhatsApp (com DDD)</label>
-                    <input
+                    <input 
                         value={whatsapp}
                         onChange={e => setWhatsapp(e.target.value)}
                         className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:border-holiday-red outline-none"
@@ -163,7 +164,7 @@ export default function ProfilePage() {
 
                 <div>
                     <label className="block text-sm font-bold text-gray-700 mb-1">Endereço de Troca (Opcional)</label>
-                    <textarea
+                    <textarea 
                         value={address}
                         onChange={e => setAddress(e.target.value)}
                         className="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:border-holiday-red outline-none resize-none h-20"
@@ -171,7 +172,7 @@ export default function ProfilePage() {
                     />
                 </div>
 
-                {/* Range Slider Visionário */}
+                {/* Range Slider */}
                 <div>
                     <div className="flex justify-between items-center mb-2">
                         <label className="text-sm font-bold text-gray-700">Distância de Busca</label>
@@ -179,10 +180,10 @@ export default function ProfilePage() {
                             {(searchRadius / 1000).toFixed(0)} km
                         </span>
                     </div>
-                    <input
-                        type="range"
-                        min="1000"
-                        max="100000"
+                    <input 
+                        type="range" 
+                        min="1000" 
+                        max="100000" 
                         step="1000"
                         value={searchRadius}
                         onChange={e => setSearchRadius(Number(e.target.value))}
@@ -194,14 +195,21 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
-                <button
+                <button 
                     onClick={updateLocation}
                     className="w-full flex items-center justify-center gap-2 p-3 text-sm font-bold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
                 >
                     <MapPin size={18} /> Atualizar GPS Atual
                 </button>
 
-                <button
+                {/* Link para Meus Itens */}
+                <Link href="/my-items" className="block">
+                    <button className="w-full flex items-center justify-center gap-2 p-3 text-sm font-bold text-holiday-green bg-green-50 rounded-xl hover:bg-green-100 transition border border-green-200 shadow-sm">
+                        <Package size={18} /> Gerenciar Meus Presentes
+                    </button>
+                </Link>
+
+                <button 
                     onClick={handleUpdateProfile}
                     disabled={saving}
                     className="w-full py-4 bg-holiday-red text-white rounded-xl font-bold shadow-lg shadow-red-200 hover:bg-red-700 transition flex items-center justify-center gap-2"
@@ -210,7 +218,7 @@ export default function ProfilePage() {
                 </button>
             </div>
 
-            <button
+            <button 
                 onClick={handleLogout}
                 className="w-full mt-8 py-3 text-red-500 font-medium flex items-center justify-center gap-2 hover:bg-red-50 rounded-xl transition"
             >
