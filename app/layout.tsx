@@ -3,6 +3,8 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar"; // <--- Importando a Navbar
 
+export const runtime = "edge";
+
 const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,4 +27,5 @@ export default function RootLayout({
             </body>
         </html>
     );
+
 }
